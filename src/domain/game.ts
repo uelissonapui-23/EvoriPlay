@@ -1,4 +1,4 @@
-export type GameId = 'blocks' | 'connections' | 'merge' | 'memory' | 'slider'
+export type GameId = 'blocks' | 'connections' | 'merge' | 'memory' | 'slider' | 'columns'
 
 export interface GameProgress {
   gameId: GameId

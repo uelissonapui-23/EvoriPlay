@@ -43,14 +43,21 @@ function makeLevel(id: number, size: number, lengths: number[], variant: 'rows' 
   return { id, size, colors: palette.slice(0, lengths.length), endpoints, solution }
 }
 
-export const levels: ConnectionLevel[] = [
-  makeLevel(1, 5, [6, 7, 6, 6], 'rows'),
-  makeLevel(2, 5, [7, 5, 8, 5], 'cols'),
-  makeLevel(3, 5, [8, 6, 5, 6], 'spiral'),
-  makeLevel(4, 6, [8, 7, 7, 8, 6], 'rows'),
-  makeLevel(5, 6, [9, 6, 8, 7, 6], 'spiral'),
-  makeLevel(6, 7, [10, 8, 9, 7, 8, 7], 'cols'),
-]
+function balancedLengths(total: number, count: number, seed: number): number[] {
+  const base = Math.floor(total / count), remainder = total % count
+  const result = Array(count).fill(base)
+  for (let index = 0; index < remainder; index++) result[(index + seed) % count]++
+  if (seed % 3 === 2 && count > 3 && result[0] > 4) { result[0]--; result[count - 1]++ }
+  return result
+}
+
+export const levels: ConnectionLevel[] = Array.from({ length: 60 }, (_, index) => {
+  const id = index + 1
+  const size = id <= 15 ? 5 : id <= 35 ? 6 : 7
+  const colors = size === 5 ? 4 : size === 6 ? 5 : 6
+  const variants: ('rows' | 'cols' | 'spiral')[] = ['rows', 'cols', 'spiral']
+  return makeLevel(id, size, balancedLengths(size * size, colors, id), variants[index % variants.length])
+})
 
 export const samePoint = (a: Point, b: Point) => a[0] === b[0] && a[1] === b[1]
 export const adjacent = (a: Point, b: Point) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) === 1
