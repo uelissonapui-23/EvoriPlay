@@ -2,3 +2,10 @@ body {
   min-width: 0;
   overflow-x: hidden;
 }
+
+.game-card button.play-game {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  cursor: pointer;
+}

@@ -8,6 +8,7 @@ export interface GameProgress {
   score: number
   highScore: number
   stats: Record<string, number>
+  state?: unknown
   updatedAt: string
 }
 

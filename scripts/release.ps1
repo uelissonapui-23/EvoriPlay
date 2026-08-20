@@ -16,8 +16,6 @@ if ($Pending) {
 }
 
 git push -u origin main
+if ($LASTEXITCODE -ne 0) { throw 'Falha ao enviar alterações ao GitHub.' }
 
-Write-Host 'Publicando na Vercel...' -ForegroundColor Cyan
-pnpm dlx vercel@latest --prod
-
-Write-Host 'EvoriPlay publicado. O Supabase continua opcional e desacoplado do gameplay offline.' -ForegroundColor Green
+Write-Host 'Alterações enviadas. A Vercel publicará automaticamente pela integração com o GitHub.' -ForegroundColor Green

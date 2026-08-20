@@ -4,8 +4,9 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
 import { localRepository } from './data/db'
 import type { Player, Settings } from './domain/player'
 import { games } from './games/registry'
+import { BlocksGame } from './games/blocks/BlocksGame'
 
-type Page = 'home' | 'games' | 'profile' | 'settings'
+type Page = 'home' | 'games' | 'profile' | 'settings' | 'blocks'
 
 export function App() {
   const [page, setPage] = useState<Page>('home')
@@ -27,6 +28,8 @@ export function App() {
     setSettings(next); await localRepository.saveSettings(next)
   }
 
+  if (page === 'blocks') return <BlocksGame onBack={() => setPage('games')} />
+
   return <div className="app-shell">
     <a className="skip-link" href="#content">Pular para o conteúdo</a>
     <header className="topbar">
@@ -36,8 +39,8 @@ export function App() {
     </header>
     {needRefresh && <section className="update-banner" role="status"><span>Uma atualização está pronta.</span><button onClick={() => updateServiceWorker(true)}>Atualizar agora</button><button className="quiet" aria-label="Fechar aviso" onClick={() => setNeedRefresh(false)}>Depois</button></section>}
     <main id="content">
-      {page === 'home' && <HomePage nickname={player?.nickname ?? 'Explorador'} onExplore={() => setPage('games')} />}
-      {page === 'games' && <GamesPage />}
+      {page === 'home' && <HomePage nickname={player?.nickname ?? 'Explorador'} onExplore={() => setPage('games')} onPlayBlocks={() => setPage('blocks')} />}
+      {page === 'games' && <GamesPage onPlayBlocks={() => setPage('blocks')} />}
       {page === 'profile' && <ProfilePage player={player} />}
       {page === 'settings' && settings && <SettingsPage settings={settings} toggle={toggle} />}
     </main>
@@ -54,13 +57,13 @@ function NavButton({ active, icon, label, onClick }: { active: boolean; icon: Re
   return <button className={active ? 'active' : ''} aria-current={active ? 'page' : undefined} onClick={onClick}>{icon}<span>{label}</span></button>
 }
 
-function HomePage({ nickname, onExplore }: { nickname: string; onExplore: () => void }) {
-  return <><section className="hero"><div><p className="eyebrow">Seu momento de jogar</p><h1>Olá, {nickname}.</h1><p>Escolha um desafio rápido, avance no seu ritmo e continue de onde parou, mesmo sem internet.</p><button className="primary" onClick={onExplore}><Gamepad2/> Explorar jogos</button></div><div className="orbital-art" aria-hidden="true"><i/><i/><i/><b>✦</b></div></section><section className="section"><div className="section-title"><div><p className="eyebrow">Pacote inicial</p><h2>Cinco jeitos de desafiar a mente</h2></div><button className="text-button" onClick={onExplore}>Ver todos</button></div><GameGrid compact /></section></>
+function HomePage({ nickname, onExplore, onPlayBlocks }: { nickname: string; onExplore: () => void; onPlayBlocks: () => void }) {
+  return <><section className="hero"><div><p className="eyebrow">Seu momento de jogar</p><h1>Olá, {nickname}.</h1><p>Escolha um desafio rápido, avance no seu ritmo e continue de onde parou, mesmo sem internet.</p><button className="primary" onClick={onPlayBlocks}><Gamepad2/> Jogar Blocos</button></div><div className="orbital-art" aria-hidden="true"><i/><i/><i/><b>✦</b></div></section><section className="section"><div className="section-title"><div><p className="eyebrow">Pacote inicial</p><h2>Cinco jeitos de desafiar a mente</h2></div><button className="text-button" onClick={onExplore}>Ver todos</button></div><GameGrid compact onPlayBlocks={onPlayBlocks} /></section></>
 }
 
-function GamesPage() { return <section className="section page-head"><p className="eyebrow">Biblioteca</p><h1>Escolha seu próximo desafio</h1><p>Os módulos estão preparados para receber cada gameplay sem alterar o núcleo do aplicativo.</p><GameGrid /></section> }
+function GamesPage({ onPlayBlocks }: { onPlayBlocks: () => void }) { return <section className="section page-head"><p className="eyebrow">Biblioteca</p><h1>Escolha seu próximo desafio</h1><p>Comece por Blocos. Os próximos jogos serão adicionados em atualizações frequentes.</p><GameGrid onPlayBlocks={onPlayBlocks} /></section> }
 
-function GameGrid({ compact = false }: { compact?: boolean }) { return <div className="game-grid">{games.slice(0, compact ? 3 : games.length).map(game => <article className="game-card" key={game.id} style={{'--accent': game.accent} as React.CSSProperties}><div className="game-icon">{game.icon}</div><div><span>{game.category}</span><h3>{game.name}</h3><p>{game.description}</p></div><button disabled aria-describedby={`status-${game.id}`}>Em construção</button><small id={`status-${game.id}`}>Disponível nas próximas etapas</small></article>)}</div> }
+function GameGrid({ compact = false, onPlayBlocks }: { compact?: boolean; onPlayBlocks: () => void }) { return <div className="game-grid">{games.slice(0, compact ? 3 : games.length).map(game => <article className="game-card" key={game.id} style={{'--accent': game.accent} as React.CSSProperties}><div className="game-icon">{game.icon}</div><div><span>{game.category}</span><h3>{game.name}</h3><p>{game.description}</p></div>{game.status === 'available' ? <><button className="play-game" onClick={onPlayBlocks}>Jogar agora</button><small id={`status-${game.id}`}>Disponível offline</small></> : <><button disabled aria-describedby={`status-${game.id}`}>Em construção</button><small id={`status-${game.id}`}>Disponível nas próximas etapas</small></>}</article>)}</div> }
 
 function ProfilePage({ player }: { player: Player | null }) { return <section className="section page-head"><p className="eyebrow">Sua jornada</p><h1>{player?.nickname ?? 'Explorador'}</h1><div className="stats"><article><strong>{player?.level ?? 1}</strong><span>Nível geral</span></article><article><strong>{player?.xp ?? 0}</strong><span>XP acumulado</span></article><article><strong>{player?.coins ?? 0}</strong><span>Estrelas</span></article></div><div className="empty-state"><span>◎</span><h2>Sua aventura começa aqui</h2><p>Recordes, conquistas e jogos recentes aparecerão depois da primeira partida.</p></div></section> }
 
