@@ -20,7 +20,17 @@ Depois de autenticar GitHub e Vercel, execute:
 pnpm release
 ```
 
-O comando valida novamente o projeto, envia a branch principal ao GitHub e publica a versão de produção na Vercel. A integração do Supabase é opcional para a V1 offline e será ativada quando `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` forem fornecidos no `.env.local`.
+O comando valida novamente o projeto, envia a branch principal ao GitHub e publica a versão de produção na Vercel. A integração usa o projeto compartilhado `evoria-platform` e mantém os dados no schema exclusivo `evoriplay`.
+
+## Supabase compartilhado
+
+Conecte a pasta local ao projeto existente uma única vez:
+
+```powershell
+pnpm supabase:link
+```
+
+O projeto remoto é `aiblckekbiudkyrkywnz`. A chave pública `anon` deve ser colocada somente em `.env.local`. Nunca use a chave `service_role` no aplicativo. As migrações ficam em `supabase/migrations` e criam apenas objetos do schema `evoriplay`.
 
 ## Desenvolvimento
 

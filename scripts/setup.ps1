@@ -33,4 +33,5 @@ pnpm build
 Write-Host ''
 Write-Host 'EvoriPlay preparado com sucesso.' -ForegroundColor Green
 Write-Host 'Desenvolvimento: pnpm dev'
+Write-Host 'Conectar Supabase compartilhado: pnpm supabase:link'
 Write-Host 'Publicação: pnpm release'

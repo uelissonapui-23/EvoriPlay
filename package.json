@@ -7,6 +7,7 @@
     "dev": "vite",
     "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/setup.ps1",
     "release": "powershell -ExecutionPolicy Bypass -File ./scripts/release.ps1",
+    "supabase:link": "powershell -ExecutionPolicy Bypass -File ./scripts/link-supabase.ps1",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",

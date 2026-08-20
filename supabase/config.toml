@@ -1,9 +1,9 @@
-project_id = "evoriplay"
+project_id = "evoria-platform"
 
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "graphql_public"]
+schemas = ["public", "graphql_public", "evoriplay"]
 
 [db]
 port = 54322
